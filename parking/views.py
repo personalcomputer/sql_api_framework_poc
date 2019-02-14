@@ -93,7 +93,7 @@ class SpotsViewSet(ViewSet):
         if self.filters:
             raise ValidationError(f'Filtering not yet available')
         if self.limit is not None:
-            queryset = queryset.limit(self.limit)
+            queryset = queryset[:self.limit]
         return queryset
 
     def serialize(self, queryset):
