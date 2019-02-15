@@ -1,5 +1,5 @@
 """
-WSGI config for sqlapi project.
+WSGI config for sql_api_framework_poc project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sqlapi.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'sql_api_framework_poc.settings')
 
 application = get_wsgi_application()
