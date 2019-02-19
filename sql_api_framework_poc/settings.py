@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'y(#0lhg_%z)_n(74fr&-##+(@x(1^-c!-k=+q#&+tjhpd23wm('
+SECRET_KEY = 'demonstration_key'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -79,7 +79,7 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'sqlapi',
         'USER': 'django',
-        'PASSWORD': 'well_known',
+        'PASSWORD': 'demonstration_password',
         'HOST': 'localhost',
         'PORT': 6432,
     },
