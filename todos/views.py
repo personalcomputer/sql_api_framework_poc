@@ -1,11 +1,10 @@
 from sql_api_framework.serializers import Field, PointField, Serializer, StrField
 from sql_api_framework.views import ViewSet
-
 from todos.models import Location, TodoItem
 
 
 class LocationSerializer(Serializer):
-    _fields = [
+    fields = [
         StrField('id'),
         Field('name'),
         Field('lat'),
@@ -23,10 +22,11 @@ class LocationViewSet(ViewSet):
 
 
 class TodoItemSerializer(Serializer):
-    _fields = [
+    fields = [
         StrField('id'),
         Field('summary'),
         Field('description'),
+        LocationSerializer('location'),
     ]
 
     @classmethod
