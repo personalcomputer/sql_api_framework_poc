@@ -19,13 +19,22 @@ class Router():
     def __init__(self):
         self.viewsets = {}
 
-    def register_viewset(self, viewset, name):
-        if name in self.viewsets:
-            raise AssertionError(f'Attempted to register multiple viewsets under the same name, \'{name}\'.')
-        self.viewsets[name] = viewset
+    def register_viewset(self, viewset, resource_name):
+        """
+        Register the ViewSet classes and their associated resource names (i.e. SQL "table" names).
+        """
+        if resource_name in self.viewsets:
+            raise AssertionError(f'Attempted to register multiple viewsets under the same name, \'{resource_name}\'.')
+        self.viewsets[resource_name] = viewset
 
     @handle_exceptions_as_errors
     def query_view(self, request, sql):
+        """
+        sql_api_framework's SQL API endpoint view method.
+
+        This view, given a SQL query, instantiates the right ViewSet for the referenced resource (SQL table), and
+        invokes it's query() method to provide a response.
+        """
         if not sql.strip():
             raise ParseError('No query provided')
         fields, resource, filters, max_results = parse_select_query(sql)
@@ -65,36 +74,42 @@ def parse_select_query(sql):
 
     resource = query['from']
 
-    filters = {}
     if 'where' in query:
-        if list(query['where'].keys()) == ['and']:
-            where_conditions = query['where']['and']
-        else:
-            where_conditions = [query['where']]
-        for filter_type, args in (next(iter(condition.items())) for condition in where_conditions):
-            if filter_type != 'eq':
-                raise ParseError('Only equality operators (=) and and operators (AND) are supported in WHERE clauses')
-            if not isinstance(args[0], str):
-                raise ParseError('Filter name / field name in WHERE clauses must appear before operand')
-            filter_name = f'{args[0]}_equal'
-            if isinstance(args[1], str):
-                if args[1] == 'TRUE':
-                    operand = True
-                elif args[1] == 'FALSE':
-                    operand = False
-                elif args[1] == 'NULL':
-                    operand = None
-                else:
-                    raise ParseError(f'Unable to parse WHERE clause filter operand \'{operand}\'')
-            elif isinstance(args[1], collections.Mapping):
-                assert('literal' in args[1])
-                operand = args[1]['literal']
-            else:
-                assert(isinstance(args[1], (int, float, list)))
-                operand = args[1]
-            filters[filter_name] = operand
-
+        filters = parse_where_clause(query['where'])
+    else:
+        filters = {}
 
     max_results = query['limit'] if 'limit' in query else None
 
     return fields, resource, filters, max_results
+
+
+def parse_where_clause(raw_where):
+    filters = {}
+    if list(raw_where.keys()) == ['and']:
+        where_conditions = raw_where['and']
+    else:
+        where_conditions = [raw_where]
+    for filter_type, args in (next(iter(condition.items())) for condition in where_conditions):
+        if filter_type != 'eq':
+            raise ParseError('Only equality operators (=) and and operators (AND) are supported in WHERE clauses')
+        if not isinstance(args[0], str):
+            raise ParseError('Filter name / field name in WHERE clauses must appear before operand')
+        filter_name = f'{args[0]}_equal'
+        if isinstance(args[1], str):
+            if args[1] == 'TRUE':
+                operand = True
+            elif args[1] == 'FALSE':
+                operand = False
+            elif args[1] == 'NULL':
+                operand = None
+            else:
+                raise ParseError(f'Unable to parse WHERE clause filter operand \'{operand}\'')
+        elif isinstance(args[1], collections.Mapping):
+            assert('literal' in args[1])
+            operand = args[1]['literal']
+        else:
+            assert(isinstance(args[1], (int, float, list)))
+            operand = args[1]
+        filters[filter_name] = operand
+    return filters
