@@ -17,9 +17,6 @@ class ListResponse(Response):
 
     def __init__(self, data):
         wrapped_data = {
-            'num_results': len(data),
-            'previous': None,
-            'next': None,
             'results': data,
         }
         super().__init__(wrapped_data)

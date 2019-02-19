@@ -1,11 +1,83 @@
 ## Introduction
-GET /sqlapi/SELECT id,lat,lng,coord_pair FROM todos_locations
-GET /sqlapi/SELECT lat,lng FROM todos_locations
-GET /sqlapi/SELECT point FROM todos_locations
-GET /sqlapi/SELECT id FROM todos_locations LIMIT 1
-GET /sqlapi/SELECT id FROM todos_locations WHERE name='test2'
-GET /sqlapi/SELECT id,summary FROM todos_todo_items
-GET /sqlapi/SELECT id,summary,location.lat,location.lng FROM todos_todo_items
+#### Query a List of TODOs
+`GET /sqlapi/SELECT id, summary FROM todos_todo_items LIMIT 2`
+```json
+{
+  "results": [
+    {
+      "id": "49f880a9-6d5b-4189-9f2f-90787a197117",
+      "summary": "Move fast"
+    },
+    {
+      "id": "a44a2731-f7b8-4ada-928d-e4569ef3b94d",
+      "summary": "Break things"
+    }
+  ]
+}
+```
+
+#### Query a List of TODOs, with Nested Location Data (Implicit JOIN)
+`GET /sqlapi/SELECT id, summary, location.lat, location.lng FROM todos_todo_items LIMIT 2`
+```json
+{
+  "results": [
+    {
+      "id": "49f880a9-6d5b-4189-9f2f-90787a197117",
+      "summary": "Move fast",
+      "location": {
+        "lat": 37.481212,
+        "lng": -122.152517
+      }
+    },
+    {
+      "id": "a44a2731-f7b8-4ada-928d-e4569ef3b94d",
+      "summary": "Break things",
+      "location": {
+        "lat": 37.481212,
+        "lng": -122.152517
+      }
+    }
+  ]
+}
+
+```
+
+#### Query a List of Locations
+`GET /sqlapi/SELECT lat, lng FROM todos_locations LIMIT 3`
+```json
+{
+  "results": [
+    {
+      "id": "132cadb6-d64d-45e5-a743-d91035a94bb8",
+      "name": "test2",
+      "lat": 37.778877,
+      "lng": -122.396293
+    }
+  ]
+}
+```
+
+#### Query a Specific Location
+`GET /sqlapi/SELECT id, name, lat, lng FROM todos_locations WHERE name='test2'`
+```json
+{
+  "results": [
+    {
+      "lat": 37.782305,
+      "lng": -122.397391
+    },
+    {
+      "lat": 37.778877,
+      "lng": -122.396293
+    },
+    {
+      "lat": 37.783757,
+      "lng": -122.394922
+    }
+  ]
+}
+
+```
 
 Note: For ease of reading, these example URLs do not have special characters URL-encoded.
 
