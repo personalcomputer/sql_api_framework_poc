@@ -33,7 +33,7 @@ class LocationListingTestCase(TestCase):
     def test_filter_equal(self):
         response = self.client.get('/sqlapi/SELECT id FROM todos_locations WHERE name=\'test2\'')
         self.assertEqual(len(response.json()['results']), 1)
-        self.assertEqual(response.json()['results'][0]['id'], self.locations[1].id)
+        self.assertEqual(response.json()['results'][0]['id'], str(self.locations[1].id))
 
 
 class TodoItemListingTestCase(TestCase):
@@ -49,6 +49,7 @@ class TodoItemListingTestCase(TestCase):
         self.assertListEqual(list(response.json()['results'][0].keys()), ['id', 'summary'])
 
     def test_join(self):
-        response = self.client.get('/sqlapi/SELECT id,summary,location.point FROM todos_todo_items JOIN todos_locations ON todos_locations.id')
+        response = self.client.get('/sqlapi/SELECT id,summary,location.lat,location.lng FROM todos_todo_items')
         self.assertEqual(len(response.json()['results']), 2)
-        self.assertListEqual(list(response.json()['results'][0].keys()), ['id', 'summary'])
+        self.assertListEqual(list(response.json()['results'][0].keys()), ['id', 'summary', 'location'])
+        self.assertListEqual(list(response.json()['results'][0]['location'].keys()), ['lat', 'lng'])

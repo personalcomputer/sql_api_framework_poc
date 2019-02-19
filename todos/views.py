@@ -4,7 +4,7 @@ from todos.models import Location, TodoItem
 
 
 class LocationSerializer(Serializer):
-    fields = [
+    fields_spec = [
         StrField('id'),
         Field('name'),
         Field('lat'),
@@ -17,12 +17,8 @@ class LocationSerializer(Serializer):
         return Location
 
 
-class LocationViewSet(ViewSet):
-    serializer_class = LocationSerializer
-
-
 class TodoItemSerializer(Serializer):
-    fields = [
+    fields_spec = [
         StrField('id'),
         Field('summary'),
         Field('description'),
@@ -32,6 +28,10 @@ class TodoItemSerializer(Serializer):
     @classmethod
     def get_model_class(cls):
         return TodoItem
+
+
+class LocationViewSet(ViewSet):
+    serializer_class = LocationSerializer
 
 
 class TodoItemViewSet(ViewSet):

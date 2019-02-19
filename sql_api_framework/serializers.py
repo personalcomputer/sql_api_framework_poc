@@ -15,9 +15,11 @@ class Field():
 
 
 class Serializer(Field):
-    def __init__(self, instance=None, queried_field_names=None):
+    def __init__(self, name=None, instance=None, source=None):
+        super().__init__(name, source)
         self.instance = instance
-        self.queried_field_names = queried_field_names
+        self._queried_field_names = None
+        self._fields_dict = None
 
     def get_data(self):
         return self.to_representation(self.instance)
@@ -26,31 +28,40 @@ class Serializer(Field):
         raise NotImplementedError()
 
     @classmethod
-    def _get_fields(cls):
-        if not hasattr(cls, 'fields'):
-            raise NotImplementedError()
-        fields_dict = {}
-        for field_class in cls.fields:
-            if hasattr(field_class, 'fields'):
-                # Subfields
-                for subfield_class in field_class.fields:
-                    # Note: support for 2nd level subfields
-                    fields_dict[field_class.name + ''] = field_class
+    def get_fields(cls):
+        if not hasattr(cls, '_fields_dict'):
+            if not hasattr(cls, 'fields_spec'):
+                raise NotImplementedError()
+            cls._fields_dict = {field.name: field for field in cls.fields_spec}
+        return cls._fields_dict
 
+    def set_queried_field_names(self, queried_field_names):
+        queried_field_identifiers = OrderedDict()
+        for raw_field_name in queried_field_names:
+            field_parts = raw_field_name.split('.')
+            field_name = field_parts[0]
+            if field_name not in self.get_fields():
+                raise ValidationError(f'Requested field {raw_field_name} not available')
+            if len(field_parts) == 2:
+                subfield_name = field_parts[1]
+                if subfield_name not in self.get_fields()[field_name].get_fields():
+                    raise ValidationError(f'Requested field {raw_field_name} not available')
+                if field_name in queried_field_identifiers:
+                    queried_field_identifiers[field_name].append(subfield_name)
+                else:
+                    queried_field_identifiers[field_name] = [subfield_name]
             else:
-                fields_dict[field_class.name] = field_class
+                queried_field_identifiers[field_name] = None
+        self._queried_field_identifiers = queried_field_identifiers
 
     def to_representation(self, value):
-        unavailable_field_names = set(self.queried_field_names) - self._get_fields().keys()
-        if unavailable_field_names:
-            unavailable_field_names_str = ', '.join((f'\'{field}\'' for field in unavailable_field_names))
-            raise ValidationError(f'Requested field(s) {unavailable_field_names_str} not available')
-
         serialized = OrderedDict()
-        for field_name in self.queried_field_names:
-            field_class = self._get_fields()[field_name]
-            value = getattr(self.instance, field_class.source)
-            serialized[field_name] = field_class.to_representation(value)
+        for field_name, queried_subfield_names in self._queried_field_identifiers.items():
+            field = self.get_fields()[field_name]
+            field_value = getattr(value, field.source)
+            if queried_subfield_names:
+                field.set_queried_field_names(queried_subfield_names)
+            serialized[field_name] = field.to_representation(field_value)
         return serialized
 
 
