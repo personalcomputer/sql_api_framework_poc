@@ -1,6 +1,6 @@
 ## Introduction
 
-I have noticed a proliferation of new specialized query languages + web based protocols gaining traction in the last few years, especially GraphQL. However, when reviewing them and what developers praise about them, I started for.ming a suspicion that this is all redundant re-engineering that could have been solved by using the venerable SQL
+I have noticed a proliferation of new specialized query languages + web based protocols gaining traction in the last few years, especially GraphQL. However, when reviewing them and what developers praise about them, I started fear that they are all redundant re-engineering that could have been solved by using the venerable SQL (but where is the money in promoting something that already exists, of course?)
 
 In order to better understand the usecases and to quell my suspicion, I made this experimental POC for what a SQL-based API framework for backend service development based on an HTTP transport layer would look like.
 
