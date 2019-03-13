@@ -1,4 +1,10 @@
 ## Introduction
+
+I have noticed a proliferation of new specialized query languages + web based protocols gaining traction in the last few years, especially GraphQL. However, when reviewing them and what developers praise about them, I started for.ming a suspicion that this is all redundant re-engineering that could have been solved by using the venerable SQL
+
+In order to better understand the usecases and to quell my suspicion, I made this experimental POC for what a SQL-based API framework for backend service development based on an HTTP transport layer would look like.
+
+## Examples
 #### Query a List of TODOs
 `GET /sqlapi/SELECT id, summary FROM todos_todo_items LIMIT 2`
 ```json
