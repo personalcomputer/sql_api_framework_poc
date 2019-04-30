@@ -9,4 +9,4 @@ steps:
     - apt-get install python3-pip python3 gdal-bin postgresql-client -y
     - python3 -m pip install gunicorn
     - python3 -m pip install -r requirements.txt
-    - python3 manage.py tst
+    - python3 manage.py test
