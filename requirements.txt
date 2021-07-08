@@ -1,4 +1,4 @@
-Django==2.1.1
+Django==2.2.24
 psycopg2==2.7.7
 moz-sql-parser==2.42.19034
 simplejson==3.16.0
