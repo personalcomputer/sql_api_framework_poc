@@ -4,6 +4,8 @@ I have noticed a proliferation of new specialized query languages + web based pr
 
 In order to better understand the usecases and to check my suspicion, I made this experimental POC for what a SQL-based API framework for backend service development based on an HTTP transport layer would look like.
 
+Note that this is NOT a direct database interface.  There is no SQL-passthrough to the RDBMS. All the normal web app API machinery is present, the full layer of abstraction enabling you to manage data consistency and trigger actions unrelated to your database, etc. Just e.g. this API design decides to write data when it sees the sql keyword "INSERT" as opposed to how a traditional REST api might use the HTTP verb "POST" for that purpose, etc. You have to explicitly define every single API resource that is accessible, and explicitly implement their underlying database queries (if they even get data from a DB at all)(in this example POC, Django ORM is used, so actually SQL is not even used at all by the API implementation code for talking to the RDBMS).
+
 ## Examples
 #### Query a List of TODOs
 `GET /sqlapi/SELECT id, summary FROM todos_todo_items LIMIT 2`
